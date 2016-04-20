@@ -3,21 +3,42 @@ var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
 //Set initial radius size
-var radius = 100;
+//var radius = 100;
 
-//Set it so that our circle grows when the button is first presssed 
-var growing = true;
+ //Set it so that our circle grows when the button is first presssed 
+ var growing = true;
 
-//Outlines the canvas
-ctx.rect(0,0,600,600);
-ctx.stroke();
+ //Outlines the canvas
+ ctx.rect(0,0,600,600);
+ ctx.stroke();
 
-//Clears the canvas
-var clear = function clear() {
-    ctx.fillStyle = "#ffffff";
-    ctx.clearRect(0,0,600,600);
+ //Clears the canvas
+ var clear = function clear() {
+     ctx.fillStyle = "#ffffff";
+     ctx.clearRect(0,0,600,600);
+ }
+
+ var makeBall = function() {
+     var radius = 10;
+     var x = 300;
+     var y = 300;
+     var draw = function() {
+	 ctx.beginPath();
+	 ctx.arc(x,y,radius,0,2*Math.PI);
+	 ctx.fill();
+     }
+     return {
+	 inc: function() {radius++;},
+	 dec: function() {radius--;},
+	 draw: draw
+     }
 }
 
+var animation = function() {
+    
+}
+
+/*
 var animation = function animation() {
     //If our growing variable is true, increase the radius by one. Else, decrease it by 1
     if (growing) {
@@ -47,6 +68,7 @@ var animation = function animation() {
     //Animates
     requestID = window.requestAnimationFrame(animation);
 };
+*/
 
 var stop = function stop() {
     //Draws our canvas border
