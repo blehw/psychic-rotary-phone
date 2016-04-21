@@ -77,15 +77,15 @@ var makeLogo = function(){
     var animate = function animate(){
 	//If deltax is true, increase x coord by 1. Else, decrease it by 1.
 	if (deltax) {
-	    x = x + 1;
+	    this.changeX(1);
 	} else {
-	    x = x - 1;
+	    this.changeX(-1);
 	}
 	//If deltay is true, increase y coord by 1. Else, decrease it by 1.
 	if (deltay) {
-	    y = y + 1;
+	    this.changeY(1);
 	} else {
-	    y = y - 1;
+	    this.changeY(-1);
 	}
 	//If our logo reaches the x border, make it move in the other x direction.
 	if (x >= 500) {
@@ -101,7 +101,6 @@ var makeLogo = function(){
 	if (y <= 0) {
 	    deltay = true;
 	}
-	
     }
 
     return {
