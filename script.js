@@ -3,7 +3,7 @@ var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
 //Set initial radius size
-//var radius = 100;
+//var radius = 100;1
 
  //Set it so that our circle grows when the button is first presssed 
  var growing = true;
@@ -22,39 +22,37 @@ var ctx = c.getContext("2d");
      var radius = 10;
      var x = 300;
      var y = 300;
+     var growing = true;
      var draw = function() {
 	 ctx.beginPath();
 	 ctx.arc(x,y,radius,0,2*Math.PI);
 	 ctx.fill();
      }
+     var animate = function() {
+	 if (radius >= 300) {
+	     growing = false;
+	 }
+	 if (radius <= 0) {
+	     growing = true;
+	 }
+	 if (growing) {
+	     this.inc();
+	 } else {
+	     this.dec();
+	 }
+     }
      return {
+	 get: function() {console.log(radius);},
 	 inc: function() {radius++;},
 	 dec: function() {radius--;},
-	 draw: draw
+	 draw: draw,
+	 animate: animate
      }
 }
 
-var animation = function() {
-    
-}
+a = makeBall();
 
-/*
-var animation = function animation() {
-    //If our growing variable is true, increase the radius by one. Else, decrease it by 1
-    if (growing) {
-	radius = radius + 1;
-    } 
-    if (!growing) {
-	radius = radius - 1;
-    }
-    //If our circle reaches the size of the canvas, make it shrink. If our circle's radius becomes 0, make it grow.
-    if (radius >=300) {
-	growing = false;
-    }
-    if (radius <=0) {
-	growing = true;
-    }
-    //Clear canvas so there are no overlapping circles
+var animation = function() {
     clear();
     //Draws our border
     ctx.rect(0,0,600,600);
@@ -62,13 +60,10 @@ var animation = function animation() {
     //Sets fill color to black (after clear set it to white)
     ctx.fillStyle = "#000000";
     //Draws and fills our circle
-    ctx.beginPath();
-    ctx.arc(300,300,radius,0,2*Math.PI);
-    ctx.fill();
-    //Animates
+    a.animate();
+    a.draw();
     requestID = window.requestAnimationFrame(animation);
-};
-*/
+}
 
 var stop = function stop() {
     //Draws our canvas border
@@ -78,6 +73,7 @@ var stop = function stop() {
     window.cancelAnimationFrame(requestID);
 };
 
+/*
 //Creates our DVD logo
 var logo = new Image();
 logo.src = "logo_dvd.jpg";
@@ -128,6 +124,7 @@ var screensaver = function screensaver() {
     //Animate
     window.requestAnimationFrame(screensaver);
 };
+*/
 
 //Buttons to start and stop animations
 document.getElementById("start").addEventListener("click", animation);
