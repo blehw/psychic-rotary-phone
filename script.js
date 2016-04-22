@@ -45,7 +45,7 @@ var makeBall = function(xcor, ycor){
     var speedcoloring = function() {
 	velocity = Math.sqrt(dx * dx + dy * dy);
 	if (velocity < 0.4) {
-	    color = "#A20110";
+	    color = "#0639D0";
 	} else if (velocity < 0.8) {
 	    color = "#1533BC";
 	} else if (velocity < 1.2) {
@@ -65,7 +65,7 @@ var makeBall = function(xcor, ycor){
 	} else if (velocity < 4.0) {
 	    color = "#920623";
 	} else {
-	    color = "#0639D0";
+	    color = "#A20110";
 	}
     }
     
