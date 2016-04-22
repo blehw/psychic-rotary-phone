@@ -15,8 +15,8 @@ var makeBall = function(xcor, ycor){
     var color = '#'+Math.random().toString(16).substr(-6);
 
     var animate = function animate(){
-	this.changeX(dx);
-	this.changeY(dy);
+	x += dx;
+	y += dy;
 
 	//If our logo reaches the x border, make it move in the other x direction.
 	if (x >= 600-r || x <= r) {
@@ -38,12 +38,14 @@ var makeBall = function(xcor, ycor){
     
     return {
 	animate: animate,
-	changeX: function(dx){ x += dx; },
-	changeY: function(dy){ y += dy; },
+	changeDX: function(newDX){ dx = newDX; },
+	changeDY: function(newDY){ dy = newDY; },
 	draw: draw,
-	getR: function(){ return r},
-	getX: function(){ return x},
-	getY: function(){ return y}
+	getDX: function(){ return dx; },
+	getDY: function(){ return dy; },
+	getR: function(){ return r; },
+	getX: function(){ return x; },
+	getY: function(){ return y; }
     }
 }
 
@@ -85,6 +87,20 @@ var animation = function(e) {
 	for(var i = 0; i < balls.length; i++){
 	    balls[i].animate();
 	    balls[i].draw();
+	    for(var j = i+1; j < balls.length; j++){
+		if(distance(balls[i].getX(), balls[i].getY(), balls[j].getX(), balls[j].getY()) <= balls[i].getR() + balls[j].getR()){
+		    m1 = Math.pow(balls[i].getR(), 2);
+		    m2 = Math.pow(balls[j].getR(), 2);
+		    var dx1 = (balls[i].getDX()*(m1-m2) + 2*balls[j].getDX()*m2) / (m1+m2);
+		    var dy1 = (balls[i].getDY()*(m1-m2) + 2*balls[j].getDY()*m2) / (m1+m2);
+		    var dx2 = (balls[j].getDX()*(m2-m1) + 2*balls[i].getDX()*m1) / (m1+m2);
+		    var dy2 = (balls[j].getDY()*(m2-m1) + 2*balls[i].getDY()*m1) / (m1+m2);
+		    balls[i].changeDX(dx1);
+		    balls[i].changeDY(dy1);
+		    balls[j].changeDX(dx2);
+		    balls[j].changeDY(dy2);
+		}
+	    }
 	}
     
 	requestID = window.requestAnimationFrame(drawAll);
