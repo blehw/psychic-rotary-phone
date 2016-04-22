@@ -2,6 +2,7 @@
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 var requestID;
+var s = false;
 
 //Outlines the canvas
 ctx.strokeRect(0,0,600,600);
@@ -12,6 +13,7 @@ var makeBall = function(xcor, ycor){
     var y = ycor;
     var dx = 6*Math.random()-3;
     var dy = 6*Math.random()-3;
+    var velocity = Math.sqrt(dx * dx + dy * dy);
     var color = '#'+Math.random().toString(16).substr(-6);
 
     var animate = function animate(){
@@ -26,7 +28,7 @@ var makeBall = function(xcor, ycor){
 	}
 	
 	//If our logo reaches the y border, make it move in the other y direction.
-	if (y >= 600-r || y <= r) {
+	if (y >= 600-r) {
 	    dy = -1*Math.abs(dy);
 	}else if(y <= r){
 	    dy = Math.abs(dy);
@@ -39,12 +41,40 @@ var makeBall = function(xcor, ycor){
 	ctx.arc(x, y, r, 0, 2*Math.PI);
 	ctx.fill();
     }
+
+    var speedcoloring = function() {
+	velocity = Math.sqrt(dx * dx + dy * dy);
+	if (velocity < 0.4) {
+	    color = "#A20110";
+	} else if (velocity < 0.8) {
+	    color = "#1533BC";
+	} else if (velocity < 1.2) {
+	    color = "#252DA9";
+	} else if (velocity < 1.6) {
+	    color = "#342896";
+	} else if (velocity < 2.0) {
+	    color = "#442283";
+	} else if (velocity < 2.4) {
+	    color = "#541D70";
+	} else if (velocity < 2.8) {
+	    color = "#63175C";
+	} else if (velocity < 3.2) {
+	    color = "#731149";
+	} else if (velocity < 3.6) {
+	    color = "#820C36";
+	} else if (velocity < 4.0) {
+	    color = "#920623";
+	} else {
+	    color = "#0639D0";
+	}
+    }
     
     return {
 	animate: animate,
 	changeDX: function(newDX){ dx = newDX; },
 	changeDY: function(newDY){ dy = newDY; },
 	draw: draw,
+	speedcoloring: speedcoloring,
 	getDX: function(){ return dx; },
 	getDY: function(){ return dy; },
 	getR: function(){ return r; },
@@ -91,6 +121,9 @@ var animation = function(e) {
 	//Draws and animates each circle
 	for(var i = 0; i < balls.length; i++){
 	    balls[i].animate();
+	    if (s) {
+		balls[i].speedcoloring();
+	    }
 	    balls[i].draw();
 	    for(var j = i+1; j < balls.length; j++){
 		if(distance(balls[i].getX(), balls[i].getY(), balls[j].getX(), balls[j].getY()) <= balls[i].getR() + balls[j].getR()){
@@ -121,7 +154,12 @@ var stop = function stop(e) {
     window.cancelAnimationFrame(requestID);
 };
 
+var sc = function sc() {
+    s = !s
+};
+
 //Buttons to start and stop animations
 document.getElementById("canvas").addEventListener("click", addBall);
 document.getElementById("start").addEventListener("click", animation);
 document.getElementById("stop").addEventListener("click", stop);
+document.getElementById("speedcoloring").addEventListener("click", sc);
