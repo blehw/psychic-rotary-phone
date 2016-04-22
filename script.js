@@ -1,132 +1,106 @@
 //Set up the canvas
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
+var requestID;
 
 //Outlines the canvas
-ctx.rect(0,0,600,600);
-ctx.stroke();
+ctx.strokeRect(0,0,600,600);
 
-//Clears the canvas
-var clear = function clear() {
-    ctx.fillStyle = "#ffffff";
-    ctx.clearRect(0,0,600,600);
-}
+var makeBall = function(xcor, ycor){
+    var r = 10*Math.random()+10;
+    var x = xcor;
+    var y = ycor;
+    var dx = 6*Math.random()-3;
+    var dy = 6*Math.random()-3;
+    var color = '#'+Math.random().toString(16).substr(-6);
 
-var makeBall = function() {
-    var radius = 10;
-    var x = 300;
-    var y = 300;
-    var growing = true;
+    var animate = function animate(){
+	this.changeX(dx);
+	this.changeY(dy);
+
+	//If our logo reaches the x border, make it move in the other x direction.
+	if (x >= 600-r || x <= r) {
+	    dx *= -1;
+	}
+	
+	//If our logo reaches the y border, make it move in the other y direction.
+	if (y >= 600-r || y <= r) {
+	    dy *= -1;
+	}
+    }
+
     var draw = function() {
+	ctx.fillStyle = color;
 	ctx.beginPath();
-	ctx.arc(x,y,radius,0,2*Math.PI);
+	ctx.arc(x, y, r, 0, 2*Math.PI);
 	ctx.fill();
     }
-    var animate = function() {
-	if (radius >= 300) {
-	    growing = false;
-	}
-	if (radius <= 0) {
-	    growing = true;
-	}
-	if (growing) {
-	    this.inc();
-	} else {
-	    this.dec();
-	}
-    }
+    
     return {
-	get: function() {console.log(radius);},
-	inc: function() {radius++;},
-	dec: function() {radius--;},
+	animate: animate,
+	changeX: function(dx){ x += dx; },
+	changeY: function(dy){ y += dy; },
 	draw: draw,
-	animate: animate
+	getR: function(){ return r},
+	getX: function(){ return x},
+	getY: function(){ return y}
     }
 }
 
-a = makeBall();
+balls = []
 
-var animation = function() {
-    clear();
-    //Draws our border
-    ctx.rect(0,0,600,600);
-    ctx.stroke();
-    //Sets fill color to black (after clear set it to white)
-    ctx.fillStyle = "#000000";
-    //Draws and fills our circle
-    a.animate();
-    a.draw();
-    requestID = window.requestAnimationFrame(animation);
+var distance = function(x1, y1, x2, y2){
+    return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1 - y2, 2));
 }
 
-var stop = function stop() {
-    //Draws our canvas border
-    ctx.rect(0,0,600,600);
-    ctx.stroke();
+var addBall = function(e) {
+    e.preventDefault();
+
+    var removed = false;
+    
+    for(var i = 0; i < balls.length; i++){
+	if(distance(e.offsetX, e.offsetY, balls[i].getX(), balls[i].getY()) < balls[i].getR()){
+	    balls.splice(i, 1);
+	    removed = true;
+	}
+    }
+
+    if(!removed){
+	balls.push(makeBall(e.offsetX, e.offsetY));
+    }
+}
+
+var animation = function(e) {
+    e.preventDefault();
+
+    window.cancelAnimationFrame(requestID);
+
+    var drawAll = function(){
+	ctx.clearRect(0, 0, 600, 600);
+	
+	//Draws our border
+	ctx.strokeRect(0,0,600,600);
+
+	//Draws and animates each circle
+	for(var i = 0; i < balls.length; i++){
+	    balls[i].animate();
+	    balls[i].draw();
+	}
+    
+	requestID = window.requestAnimationFrame(drawAll);
+    }
+
+    drawAll();
+}
+
+var stop = function stop(e) {
+    e.preventDefault();
+    
     //Cancels the animation
     window.cancelAnimationFrame(requestID);
 };
 
-var makeLogo = function(){
-    var x = 300;
-    var y = 300;
-    var logo = new Image();
-    logo.src = "logo_dvd.jpg";
-    var deltax, deltay = true;
-
-    var animate = function animate(){
-	//If deltax is true, increase x coord by 1. Else, decrease it by 1.
-	if (deltax) {
-	    this.changeX(1);
-	} else {
-	    this.changeX(-1);
-	}
-	//If deltay is true, increase y coord by 1. Else, decrease it by 1.
-	if (deltay) {
-	    this.changeY(1);
-	} else {
-	    this.changeY(-1);
-	}
-	//If our logo reaches the x border, make it move in the other x direction.
-	if (x >= 500) {
-	    deltax = false;
-	}
-	if (x <= 0) {
-	    deltax = true;
-	}
-	//If our logo reaches the y border, make it move in the other y direction.
-	if (y >= 530) {
-	    deltay = false;
-	}
-	if (y <= 0) {
-	    deltay = true;
-	}
-    }
-
-    return {
-	changeX: function(dx){ x += dx; },
-	changeY: function(dy){ y += dy; },
-	animate: animate,
-	draw: function(){ ctx.drawImage(logo,x,y,100,70); }
-    }
-}
-
-var b = makeLogo();
-
-var screensaver = function screensaver() {
-    //Clears screen, draws border
-    clear();
-    ctx.rect(0,0,600,600);
-    ctx.stroke();
-
-    //Draws image
-    b.animate();
-    b.draw();
-
-    requestID = window.requestAnimationFrame(screensaver);
-};
-
 //Buttons to start and stop animations
+document.getElementById("canvas").addEventListener("click", addBall);
 document.getElementById("start").addEventListener("click", animation);
 document.getElementById("stop").addEventListener("click", stop);
-document.getElementById("DVD").addEventListener("click", screensaver);
