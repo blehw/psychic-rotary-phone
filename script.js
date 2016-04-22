@@ -69,6 +69,7 @@ var addBall = function(e) {
 
     if(!removed){
 	balls.push(makeBall(e.offsetX, e.offsetY));
+	balls[balls.length-1].draw();
     }
 }
 
