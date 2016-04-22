@@ -19,13 +19,17 @@ var makeBall = function(xcor, ycor){
 	y += dy;
 
 	//If our logo reaches the x border, make it move in the other x direction.
-	if (x >= 600-r || x <= r) {
-	    dx *= -1;
+	if (x >= 600-r) {
+	    dx = -1*Math.abs(dx);
+	}else if(x <= r){
+	    dx = Math.abs(dx);
 	}
 	
 	//If our logo reaches the y border, make it move in the other y direction.
 	if (y >= 600-r || y <= r) {
-	    dy *= -1;
+	    dy = -1*Math.abs(dy);
+	}else if(y <= r){
+	    dy = Math.abs(dy);
 	}
     }
 
